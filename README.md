@@ -8,7 +8,7 @@ This repository provides methods to scrape taxonomic information from
 ----
 
 Currently, there is 
-### wormsbyname
+### wormsbyname()
 which implements the GET /AphiaRecordsByNames method
 
 
