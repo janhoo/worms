@@ -3,8 +3,11 @@
 
 
 This repository provides methods to scrape taxonomic information from 
-www.marinespecies.org. Currently, there is 
+[WORMS](www.marinespecies.org)
 
+----
+
+Currently, there is 
 ### wormsbyname
 which implements the GET /AphiaRecordsByNames method
 
