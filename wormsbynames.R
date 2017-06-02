@@ -23,7 +23,7 @@
 #'     taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
 #'     w<-wormsbynames(taxon_names)
 #'    failed_species<-rownames(w[is.na(w[,1]),])
-wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", marine_only="true",fuzzy="true",sleep_btw_chunks_in_sec=0.1){
+wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", marine_only="true",sleep_btw_chunks_in_sec=0.1){
   library(httr)
   library(plyr)
 
