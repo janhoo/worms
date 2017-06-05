@@ -20,9 +20,11 @@ this package depends on `plyr` and `httr`. you may need to install these package
 Done.
 
 ## Usage
-issue `library(worms)`
-use the package documentation, e.g. type
-`?wormsbynames` to read what that does and how to use ist
+issue `library(worms)`,
+
+use the package documentation, e.g., 
+
+type `?wormsbynames` to read how to use it
 
 ## Contributing
 1. Fork it!
