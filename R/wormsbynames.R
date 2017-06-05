@@ -1,28 +1,28 @@
-
-#' GET taxonomic information from WORMS
+#' @title GET AphiaRecordsByNames 
 #' 
-#' This function will take a character vector with taxon names, 
+#' @description takes character vector with taxon names and retrives AphiaRecords from WoRMS 
+#'
+#' @param taxon_names character vector with names of taxa to look up.
+#' @param chunksize only 50 taxa can be looked up per request, so request are split up into chunks (should be 50 or less)
+#' @param verbose be verbose
+#' @param like Add a "\%"-sign after the ScientificName (SQL LIKE function). Default=true
+#' @param marine_only Limit to marine taxa. Default=true
+#' @param sleep_btw_chunks_in_sec pause between requests 
+#' 
+#' @return a data frame.
+#' @details This function will take a character vector with taxon names, 
 #' retrive AphiaRecords from www.marinespecies.org using the 
 #' GET /AphiaRecordsByName/{ScientificName} Method described at
 #' http://www.marinespecies.org/rest/.
 #' Results will be outbut to a data.frame with each row being a record.
 #' For each name given, only the first AphiaRecord will be retrived. Further records about 
 #' deleted and ressurected ids are not preserved
-#' 
-#' @author Jan Holstein <<janmholstein@gmail.com>>
-#' @param taxon_names character vector with names of taxa to look up.
-#' @param chunksize only 50 taxa can be looked up per request, so request are split up into chunks (should be 50 or less)
-#' @param verbose be verbose
-#' @param like Add a '%'-sign after the ScientificName (SQL LIKE function). Default=true
-#' @param marine_only Limit to marine taxa. Default=true
-#' @param sleep_btw_chunks_in_sec pause between requests 
-#' 
-#' @return a data frame.
-#' @export
+#' For each given scientific name, try to find one or more AphiaRecords. This allows you to match multiple names in one call.
+#' GET taxonomic information from WORMS
 #' @examples
-#'     taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
-#'     w<-wormsbynames(taxon_names)
-#'    failed_species<-rownames(w[is.na(w[,1]),])
+#' taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
+#' w<-wormsbynames(taxon_names)
+#' failed_species<-rownames(w[is.na(w[,1]),])
 wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", marine_only="true",sleep_btw_chunks_in_sec=0.1){
   library(httr)
   library(plyr)
