@@ -22,7 +22,27 @@
 #' @examples
 #' taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
 #' w<-wormsbynames(taxon_names)
+#' ## unrecognized returns
 #' failed_species<-rownames(w[is.na(w[,1]),])
+#' 
+#' ## this is how to load taxon_names from file
+#' write.csv(taxon_names,file="tax.csv", 
+#'         row.names=FALSE,
+#'         na = "", 
+#'         fileEncoding="UTF8")
+#' ## check it out, the load it
+#' read.csv(file="tax.csv",
+#'         na = "", 
+#'         fileEncoding="UTF8",
+#'         stringsAsFactors=FALSE,
+#'         col.names=FALSE)
+#' ## save results to file to inspect with, e.g. spreadsheet software
+#' write.csv(w,file="aphiainfo.csv", 
+#'         na = "", 
+#'         fileEncoding="UTF8",
+#'         col.names=TRUE,
+#'         row.names=TRUE)
+#' 
 wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", marine_only="true",sleep_btw_chunks_in_sec=0.1){
   library(httr)
   library(plyr)
@@ -73,17 +93,6 @@ wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", mar
   rownames(worms)<-taxon_names
   return(worms)
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 if(FALSE){   ### testing the function
