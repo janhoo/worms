@@ -87,9 +87,9 @@ wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", mar
 
 
 if(FALSE){   ### testing the function
-  taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Abradfgsdfg", "Abra alba" )
-  w<-wormsbynames(taxon_names)
-  failed_species<-rownames(w[is.na(w[,1]),])
+  taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
+  head(w<-wormsbynames(taxon_names))
+  (failed_species<-rownames(w[is.na(w[,1]),]))
 }
 
 
