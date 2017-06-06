@@ -9,13 +9,15 @@ This repository provides methods to scrape taxonomic information from
 
 ## Installation
 
-just issue
+Just issue
 ```
 devtools::install_github("janhoo/worms")
 ```
-you may need to (`install.packages("devtools")`) first.
+You may need to (`install.packages("devtools")`) first.
 
-this package depends on `plyr` and `httr`. you may need to install these packages first .
+This package depends on `plyr` and `httr` which should be installed automatically.
+
+However, you may need to install these packages first if automatism fails.
 
 Done.
 

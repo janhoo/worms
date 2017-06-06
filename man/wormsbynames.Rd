@@ -40,7 +40,7 @@ GET taxonomic information from WORMS
 \examples{
 taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
 w<-wormsbynames(taxon_names)
-## unrecognized returns
+## print unrecognized returns
 failed_species<-rownames(w[is.na(w[,1]),])
 
 ## this is how to load taxon_names from file
@@ -48,15 +48,14 @@ write.csv(taxon_names,file="tax.csv",
         row.names=FALSE,
         na = "", 
         fileEncoding="UTF8")
-## check it out, the load it
+## check it out, then load it
 read.csv(file="tax.csv",
         na = "", 
         fileEncoding="UTF8",
         stringsAsFactors=FALSE,
         col.names=FALSE)
 ## save results to file to inspect with, e.g. spreadsheet software
-write.csv(taxon_names,file="tax.csv", 
-        row.names=FALSE,
+write.csv(w,file="aphiainfo.csv", 
         na = "", 
         fileEncoding="UTF8",
         col.names=TRUE,
