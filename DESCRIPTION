@@ -1,12 +1,7 @@
 Package: worms
 Type: Package
 Title: retriving Aphia information from World Register of Marine Species (WoRMS)
-Description: using WoRMS' RESTful Webservice, worms provides methods to retrieve
-taxonomic information from WoRMS. 
-Build a consistent and WoRMS complient taxonomic dataset.
-Add the respective valid taxa to your taxonimic dataset. 
-For your taxa, get the Aphia ID of the currently  **accepted** taxon, 
-which is not neccessarily identical to the valid Aphia id provided by WoRMS.
+Description: using WoRMS' RESTful Webservice, worms provides methods to retrieve taxonomic information from WoRMS. Build a consistent and WoRMS complient taxonomic dataset. Add the respective valid taxa to your taxonimic dataset. For your taxa, get the Aphia ID of the currently  **accepted** taxon, which is not neccessarily identical to the valid Aphia id provided by WoRMS.
 Version: 0.2.0
 Author: Jan M Holstein
 Maintainer: Jan M Holstein<janmholstein@gmail.com>
