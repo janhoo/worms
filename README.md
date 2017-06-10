@@ -1,9 +1,12 @@
 # worms
-## retriving Aphia information from World Register of Marine Species (www.marinespecies.org)
+## retriving Aphia information from World Register of Marine Species (www.marinespecies.org) using WoRMS' RESTful Webservice
 
 
 This repository provides methods to scrape taxonomic information from 
-[WoRMS](http://www.marinespecies.org)
+[www.marinespecies.org](http://www.marinespecies.org). 
+Use it to check taxonimic information against the [WoRMS](http://www.marinespecies.org) repository.
+Add the respective \emph{valid} taxons to your taxonimic dataset and for each taxon amend the Aphia ID of the currently  \emph{accepted} taxon, which is not neccessarily identical to the \emph{valid Aphia id}
+
 
 ----
 
@@ -15,10 +18,6 @@ devtools::install_github("janhoo/worms")
 ```
 You may need to (`install.packages("devtools")`) first.
 
-This package depends on `plyr` and `httr` which should be installed automatically.
-
-However, you may need to install these packages first if automatism fails.
-
 Done.
 
 ## Usage
@@ -26,7 +25,7 @@ issue `library(worms)`,
 
 use the package documentation, e.g., 
 
-type `?wormsbynames` to read how to use it
+type `?worms` and check the index to read function
 
 ## Contributing
 1. Fork it!
