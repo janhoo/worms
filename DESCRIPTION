@@ -1,8 +1,12 @@
 Package: worms
 Type: Package
-Title: Scrapes Aphia information from www.marinespecies.org
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Title: retriving Aphia information from World Register of Marine Species (WoRMS)
+Description: using WoRMS' RESTful Webservice, worms provides methods to retrieve
+taxonomic information from WoRMS. 
+Build a consistent and WoRMS complient taxonomic dataset.
+Add the respective valid taxa to your taxonimic dataset. 
+For your taxa, get the Aphia ID of the currently  **accepted** taxon, 
+which is not neccessarily identical to the valid Aphia id provided by WoRMS.
 Version: 0.2.0
 Author: Jan M Holstein
 Maintainer: Jan M Holstein<janmholstein@gmail.com>
@@ -11,7 +15,7 @@ Authors@R: c( person("Jan", "Holstein","M" , "janmholstein@gmail.com",
 Depends:
     httr,
     plyr
-License: GNU Affero GPL (>= v3.0)
+License: GNU Affero General Public License
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1

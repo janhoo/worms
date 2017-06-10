@@ -1,11 +1,8 @@
 # worms
 ## retriving Aphia information from World Register of Marine Species (www.marinespecies.org) using [WoRMS´](http://www.marinespecies.org) RESTful Webservice
-
-
-This repository provides methods to scrape taxonomic information from 
-WoRMS. 
-Use it to check taxonimic information against the WoRMS repository.
-For your taxons, add the respective valid taxons to your taxonimic dataset. For yout taxons, get the Aphia ID of the currently  **accepted** taxon, which is not neccessarily identical to the valid Aphia id provided by WoRMS (AFAIunderstood in case of deleted or resurrected taxa).
+Build a consistent and WoRMS complient taxonomic dataset.
+Add the respective valid taxa to your taxonimic dataset. 
+For your taxa, add the respective valid taxa to your taxonimic dataset. For your taxa, get the Aphia ID of the currently  **accepted** taxon, which is not neccessarily identical to the valid Aphia id provided by WoRMS (AFAIunderstood in case of deleted or resurrected taxa).
 
 
 ----
