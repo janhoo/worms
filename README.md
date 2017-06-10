@@ -5,7 +5,7 @@
 This repository provides methods to scrape taxonomic information from 
 WoRMS. 
 Use it to check taxonimic information against the WoRMS repository.
-Add the respective *valid* taxons to your taxonimic dataset and for each taxon amend the *Aphia ID* of the currently  *accepted* taxon, which is not neccessarily identical to the *valid Aphia id*
+For your taxons, add the respective valid taxons to your taxonimic dataset. For yout taxons, get the Aphia ID of the currently  **accepted** taxon, which is not neccessarily identical to the valid Aphia id provided by WoRMS (AFAIunderstood in case of deleted or resurrected taxa).
 
 
 ----
