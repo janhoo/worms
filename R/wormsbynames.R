@@ -5,6 +5,8 @@
 #' @param taxon_names character vector with names of taxa to look up.
 #' @param chunksize only 50 taxa can be looked up per request, so request are split up into chunks (should be 50 or less)
 #' @param verbose be verbose
+#' @param ids add column "id" and "name" with running id and search names
+#' @param match taxon_names that could not retrieved will be retried with \code{\link{wormsbymatchnames}}. Implies "id=TRUE"
 #' @param like Add a "\%"-sign after the ScientificName (SQL LIKE function). Default=true
 #' @param marine_only Limit to marine taxa. Default=true
 #' @param sleep_btw_chunks_in_sec pause between requests 
@@ -14,13 +16,12 @@
 #' retrive AphiaRecords from www.marinespecies.org using the 
 #' GET /AphiaRecordsByName/{ScientificName} Method described at
 #' http://www.marinespecies.org/rest/.
-#' Results will be outbut to a data.frame with each row being a record.
-#' For each name given, only the first AphiaRecord will be retrived. Further records about 
-#' deleted and ressurected ids are not preserved
-#' For each given scientific name, try to find one or more AphiaRecords. This allows you to match multiple names in one call.
-#' GET taxonomic information from WORMS
+#' Results will be output to a data.frame with each row being a record.
+#' For each name given, only the one AphiaRecord will be retrived. AphiaRecord with "accepted" status are preferred.
+#' If  not present last entry will be taken which seems to result in best results.
+#' 
 #' @examples
-#' taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
+#' taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Westwodilla caecula", "Garbage", "Abra alba" )
 #' w<-wormsbynames(taxon_names)
 #' ## print unrecognized returns
 #' failed_species<-rownames(w[is.na(w[,1]),])
@@ -43,19 +44,22 @@
 #'         col.names=TRUE,
 #'         row.names=TRUE)
 #' 
-wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", marine_only="true",sleep_btw_chunks_in_sec=0.1){
+wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksize=50,like="true", marine_only="true",sleep_btw_chunks_in_sec=0.1){
   library(httr)
   library(plyr)
-
+  
+  
+  stopifnot(inherits(taxon_names,"character"))
+  if(match){ids<-TRUE}
   search_options<-paste0("like=",like,"&marine_only=",marine_only)
   my_worms<-list()
   request<-"http://www.marinespecies.org/rest/AphiaRecordsByNames"
   #li<-setNames(    as.list(c(a[[1]],"false","true")) , c( rep("scientificnames[]",length(a[[1]])),"like","marine_only" ) )     
   # r<-GET("http://www.marinespecies.org/rest/AphiaRecordsByName", query = list("scientificnames[]" = "Abietinaria%20abietina","scientificnames[]" = "Acanthocardia%20echinata"))
-  search_items<-taxon_names
-  wrapname<-gsub(" ", "%20", search_items)
-  chunk<-split(wrapname, ceiling(seq_along(search_items)/chunksize))
-  chunkid<-split(1:length(search_items), ceiling(seq_along(search_items)/chunksize))
+  
+    wrapname<-gsub(" ", "%20", taxon_names)
+  chunk<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
+  chunkid<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
   for (round in 1:length(chunk)){
     if(verbose){
       cat("requesting ",length(chunk[[round]])," items, chunk ",round,"/",length(chunk), ". \n",sep = "")
@@ -68,7 +72,8 @@ wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", mar
       if(r$status_code==200){
         cat("success (Status ",r$status_code,") \n",sep = "")
       } else {
-        cat("operation NOT successful (Status ",r$status_code,")"," skipping chunk","\n",sep = "")
+        cat("operation NOT successful (Status ",r$status_code,")"," stopping","\n",sep = "")
+        stop()
       }
     }
     
@@ -80,25 +85,163 @@ wormsbynames <- function(taxon_names,verbose=TRUE,chunksize=50,like="false", mar
       if(is.null(r_parsed[[i]][[1]])){
         my_worms[[w_index]]<-NA
         cat("failed finding Aphia record for                ",taxon_names[w_index], "\n")
-      } else {
+      } else if(length(r_parsed[[i]])==1){
         my_worms[[w_index]]<-r_parsed[[i]][[1]]
+      } else {
+        l<-length(r_parsed[[i]])
+        my_worms[[w_index]]<-r_parsed[[i]][[l]]
+        # for(j in 1:l){
+        #   if(r_parsed[[i]][[j]]$status == "unaccepted"){
+        #     my_worms[[w_index]]<-r_parsed[[i]][[j]]
+        #   }
+        # }
+        for(j in 1:l){
+          if(r_parsed[[i]][[j]]$status == "accepted"){
+            my_worms[[w_index]]<-r_parsed[[i]][[j]]
+          }
+        }          
       }
     }
-    
-    
   }
   # pull dataframe out of master list
   non.null.list <- lapply(my_worms, lapply, function(x)ifelse(is.null(x), NA, x))
   worms<-rbind.fill(lapply(non.null.list, as.data.frame,stringsAsFactors = F))
-  rownames(worms)<-taxon_names
+  worms$NA.<-NULL
+  if(ids){
+    worms<-cbind(data.frame(id=1:nrow(worms) , name=taxon_names,stringsAsFactors = F),worms)
+  }
+  if (verbose) {cat("DONE ................................................by names\n")}
+  
+  if(match){
+    cat("  Trying to match failed names\n")
+    nonefound<-is.na(worms[,"AphiaID"])
+    failed_species<-taxon_names[nonefound]
+    if(length(failed_species)>0){
+      failed_worms<-wormsbymatchnames(failed_species)
+      worms[nonefound,c(F,F,rep(T,ncol(failed_worms)))]<-failed_worms
+    } else {
+      cat("  Nothing to match.\n")
+    }
+    
+  } 
+  
+  
+  
   return(worms)
 }
 
 
-if(FALSE){   ### testing the function
-  taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
-  head(w<-wormsbynames(taxon_names))
-  (failed_species<-rownames(w[is.na(w[,1]),]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' @title GET AphiaRecordsByMatchNames
+#' 
+#' @description takes character vector with taxon names and retrives AphiaRecords from WoRMS 
+#'
+#' @param taxon_names character vector with names of taxa to look up.
+#' @param chunksize only 50 taxa can be looked up per request, so request are split up into chunks (should be 50 or less)
+#' @param verbose be verbose
+#' @param ids add column "id" and "name" with running id and search names
+#' @param marine_only Limit to marine taxa. Default=true
+#' @param sleep_btw_chunks_in_sec pause between requests 
+#' 
+#' @return a data frame.
+#' @details This function will take a character vector with taxon names, 
+#' retrive AphiaRecords from www.marinespecies.org using the 
+#' GET /AphiaRecordsByName/{ScientificName} Method described at
+#' http://www.marinespecies.org/rest/.
+#' Results will be output to a data.frame with each row being a record.
+#' For each name given, only the one AphiaRecord will be retrived. AphiaRecord with "accepted" status are preferred.
+#' If  not present last entry will be taken which seems to result in best results.
+#' 
+wormsbymatchnames <- function(taxon_names,verbose=TRUE,ids=FALSE,chunksize=50, marine_only="true",sleep_btw_chunks_in_sec=0.1){
+  library(httr)
+  library(plyr)
+  stopifnot(inherits(taxon_names,"character"))
+  
+  
+  search_options<-paste0("marine_only=",marine_only)
+  my_worms<-list()
+  request<-"http://www.marinespecies.org/rest/AphiaRecordsByMatchNames"
+  #li<-setNames(    as.list(c(a[[1]],"false","true")) , c( rep("scientificnames[]",length(a[[1]])),"like","marine_only" ) )     
+  # r<-GET("http://www.marinespecies.org/rest/AphiaRecordsByName", query = list("scientificnames[]" = "Abietinaria%20abietina","scientificnames[]" = "Acanthocardia%20echinata"))
+  taxon_names<-taxon_names
+  wrapname<-gsub(" ", "%20", taxon_names)
+  chunk<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
+  chunkid<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
+  for (round in 1:length(chunk)){
+    if(verbose){
+      cat("requesting ",length(chunk[[round]])," items, chunk ",round,"/",length(chunk), ". \n",sep = "")
+    }
+    m<-paste(paste(paste0("scientificnames[]=",chunk[[round]]),collapse="&"),search_options,sep="&")
+    r<-GET(paste(request,m,sep="?"))
+    Sys.sleep(sleep_btw_chunks_in_sec)
+    
+    if(verbose){
+      if(r$status_code==200){
+        cat("success (Status ",r$status_code,") \n",sep = "")
+      } else {
+        cat("operation NOT successful (Status ",r$status_code,")"," stopping","\n",sep = "")
+        stop()
+      }
+    }
+    
+    # gather lists in master list
+    r_parsed<-content(r,as="parsed")
+    for (i in 1:length(r_parsed)){
+      w_index<-unlist(chunkid[round])[i]
+      #cat(round,i,unlist(chunkid[round])[i],class(i),"\n")
+      if(is.null(r_parsed[[i]][[1]])){
+        my_worms[[w_index]]<-NA
+        if(verbose){
+          cat("failed finding Aphia record for                ",taxon_names[w_index], "\n")
+        }
+      } else if(length(r_parsed[[i]])==1){
+        my_worms[[w_index]]<-r_parsed[[i]][[1]]
+      } else {
+        my_worms[[w_index]]<-r_parsed[[i]][[1]]
+        
+        for(j in 1:length(r_parsed[[i]])){
+          if(r_parsed[[i]][[j]]$status == "unaccepted"){
+            my_worms[[w_index]]<-r_parsed[[i]][[j]]
+          }
+        }
+        for(j in 1:length(r_parsed[[i]])){
+          if(r_parsed[[i]][[j]]$status == "accepted"){
+            my_worms[[w_index]]<-r_parsed[[i]][[j]]
+          }
+        }          
+      }
+      if(verbose){
+        cat(taxon_names[w_index]," ->  ",my_worms[[w_index]]$scientificname,"      ", my_worms[[w_index]]$match_type, "\n")
+      }
+    }
+  }
+  # pull dataframe out of master list
+  non.null.list <- lapply(my_worms, lapply, function(x)ifelse(is.null(x), NA, x))
+  worms<-rbind.fill(lapply(non.null.list, as.data.frame,stringsAsFactors = F))
+  worms$NA.<-NULL
+  if(ids){
+    worms<-cbind(data.frame(id=1:nrow(worms) , name=taxon_names,stringsAsFactors = F),worms)
+  }
+  if (verbose) {
+    cat("DONE ................................................matching names \n")
+    cat("matching results should be checked.  \n")
+    }
+  return(worms)
 }
 
 
@@ -106,5 +249,162 @@ if(FALSE){   ### testing the function
 
 
 
+
+
+
+#' @title GET AphiaRecordByAphiaID
+#' 
+#' @description takes more than one AphiaID and retrives AphiaRecords from WoRMS 
+#'
+#' @param x AphiaIDs
+#' @param verbose be verbose
+#' @param ids add column "id" and "name" with running id and search names
+#' @param sleep_btw_chunks_in_sec pause between requests 
+#' 
+#' @return a data frame.
+#' @details This function will take a integer vector with AphiaIDs, 
+#' retrive AphiaRecords from www.marinespecies.org using the 
+#' GET /AphiaRecordByAphiaID Method described at
+#' http://www.marinespecies.org/rest/.
+#' Results will be output to a data.frame with each row being a record.
+#' 
+wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
+  library(httr)
+  library(plyr)
+  stopifnot(inherits(x,c("numeric","integer")))
+  my_worms<-list()
+  if(verbose){      cat("requesting ",length(x)," IDs:\n",sep = "")    }
+  
+  
+  for (round in 1:length(x)){
+    if(verbose){      cat(",",x[round],sep = "")    }
+    r<-GET(paste("http://www.marinespecies.org/rest/AphiaRecordByAphiaID",x[round],sep="/"))
+    Sys.sleep(sleep_btw_chunks_in_sec)
+    
+    if (r$status_code!=200) {
+      if(verbose){        cat("(",r$status_code,")",sep = "")      }
+      r_parsed<-NA
+    } else {
+      #if(verbose){        cat("success (Status ",r$status_code,") \n",sep = "")      }
+      r_parsed<-content(r,as="parsed")
+    }
+    if(verbose & round%%10==0){        cat("\n",sep = "")      }
+    my_worms[[round]]<-r_parsed
+  }
+  
+  
+  if (verbose) {cat("\n")}
+  # pull dataframe out of master list
+  non.null.list <- lapply(my_worms, lapply, function(x)ifelse(is.null(x), NA, x))
+  worms<-rbind.fill(lapply(non.null.list, as.data.frame,stringsAsFactors = F))
+  if(ids){
+    worms<-cbind(data.frame(id=1:nrow(worms) , name=x,stringsAsFactors = F),worms)
+  }
+  if (verbose) {cat("DONE ................................................by id\n")}
+  return(worms)
+}
+
+
+#' @title add "accepted" AphiaRecords for all synonyms if not already there
+#' 
+#' @description takes data.frame as output by \code{\link{wormsbynames}} , 
+#' \code{\link{wormsbymatchnames}}, or \code{\link{wormsbyid}} and retrieves  additional
+#' Aphia records for not-"accepted" records in order to ultimately have "accepted" synonyms for all 
+#' records in the dataset.
+#'
+#' @param x data.frame
+#' @param verbose be verbose
+#' @param sleep_btw_chunks_in_sec pause between requests 
+#' 
+#' @return a data frame.
+#' @details This function will take a integer vector with AphiaIDs, 
+#' retrive AphiaRecords from www.marinespecies.org using the 
+#' GET /AphiaRecordByAphiaID Method described at
+#' http://www.marinespecies.org/rest/.
+#' Results will be outbut to a data.frame with each row being a record.
+#' 
+wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
+  if(FALSE){
+    x<-myworms
+    verbose=TRUE
+    sleep_btw_chunks_in_sec=0.01
+  }
+  count<-0
+  while(TRUE){
+    count<-count+1
+    ids<-ifelse(names(x)[1]=="id",TRUE,FALSE)
+    
+    unexplained<-x[(!is.na(x$valid_AphiaID)) & (x$status!="accepted") & (!x$valid_AphiaID%in%x$AphiaID),]
+    anz_unexplaind<-nrow(unexplained)
+    if(   anz_unexplaind!=0   ){
+      if (verbose) {    cat("\nstill ",anz_unexplaind,"unhappy worms\n")   }
+      happyworms<-wormsbyid(unexplained$valid_AphiaID)
+      if(ids){
+        happyworms<-cbind(data.frame(id=(max(x$id)+1):(max(x$id)+nrow(happyworms)) , name=happyworms$scientificname), happyworms)
+      }
+      x<-rbind(x,happyworms)
+    } else {
+      if (verbose) {cat("DONE ................................................consolidating\n")}
+      break
+    }
+  }
+  return(x)
+}
+
+
+
+
+
+
+#' @title add field "accepted_id" wich contains the "AphiaID" of the respective "accepted" taxon
+#' 
+#' @description takes data.frame as output by \code{\link{wormsbynames}} , 
+#' \code{\link{wormsbymatchnames}}, or \code{\link{wormsbyid}} 
+#' and add field "accepted_id" wich contains the "AphiaID" 
+#' of the respective "accepted" taxon
+#'
+#' @param x data.frame
+#' @param verbose be verbose
+#' @param n_iter maximum search depth. Usually 3 is sufficient. Safety feature for breaking the \code{while} loop
+#' 
+#' @return a data frame.
+#' @details This function helps updating you taxon information and eliminates ambiguity 
+#' because the valid AphiaID is nor neccessary the AphiaID of an accepted taxon. You should run 
+#' \code{\link{wormsconsolidate}} bevorhand to enshure all "accepted" taxons are present.
+#' 
+wormsaccepted <- function(x,verbose=TRUE,n_iter=5){
+  # fixme make shure valid_AphiaIDs are unique
+  x$accepted_id<-NA 
+  for(i in 1:nrow(x)){
+    count<-0
+    if(is.na(x$valid_AphiaID[i])) {
+      cat(x$scientificname[i] , " has no valid_AphiaID \n")
+      next
+    }
+    x$accepted_id[i]<-x$valid_AphiaID[i]
+    while(x$status[match(x$accepted_id[i],x$AphiaID)] != "accepted"){
+      count<-count+1
+      x$accepted_id[i]<-x$valid_AphiaID[match(x$accepted_id[i],x$AphiaID)]
+      if(count>n_iter){
+        cat("no accepted AphiaID for ",x$scientificname[i] , " after", n_iter," interations")
+        break
+      }
+    }
+  }
+  if (verbose) {cat("DONE ................................................accepting\n")}
+  return(x)
+}
+
+
+
+
+
+
+
+if(FALSE){   ### testing the function
+  w<-wormsbyid(c(238194,734530,45,1234567889))
+  w<-wormsbynames(c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" ))
+  (failed_species<-rownames(w[is.na(w[,1]),]))
+}
 
 
