@@ -32,7 +32,10 @@ type `?worms` and check the index to read function  <br />
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-
+## Contact
+* submit suggestions and bug-reports at: https://github.com/janhoo/worms/issues
+* send a pull request on: https://github.com/janhoo/worms/
+* compose a friendly e-mail to:jm.smith[at]gmx(dot)net
 
 ----
 
