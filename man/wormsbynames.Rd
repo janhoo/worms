@@ -4,11 +4,16 @@
 \alias{wormsbynames}
 \title{GET AphiaRecordsByNames}
 \usage{
-wormsbynames(taxon_names, verbose = TRUE, chunksize = 50, like = "false",
-  marine_only = "true", sleep_btw_chunks_in_sec = 0.1)
+wormsbynames(taxon_names, ids = FALSE, match = FALSE, verbose = TRUE,
+  chunksize = 50, like = "true", marine_only = "true",
+  sleep_btw_chunks_in_sec = 0.1)
 }
 \arguments{
 \item{taxon_names}{character vector with names of taxa to look up.}
+
+\item{ids}{add column "id" and "name" with running id and search names}
+
+\item{match}{taxon_names that could not retrieved will be retried with \code{\link{wormsbymatchnames}}. Implies "id=TRUE"}
 
 \item{verbose}{be verbose}
 
@@ -31,14 +36,12 @@ This function will take a character vector with taxon names,
 retrive AphiaRecords from www.marinespecies.org using the 
 GET /AphiaRecordsByName/{ScientificName} Method described at
 http://www.marinespecies.org/rest/.
-Results will be outbut to a data.frame with each row being a record.
-For each name given, only the first AphiaRecord will be retrived. Further records about 
-deleted and ressurected ids are not preserved
-For each given scientific name, try to find one or more AphiaRecords. This allows you to match multiple names in one call.
-GET taxonomic information from WORMS
+Results will be output to a data.frame with each row being a record.
+For each name given, only the one AphiaRecord will be retrived. AphiaRecord with "accepted" status are preferred.
+If  not present last entry will be taken which seems to result in best results.
 }
 \examples{
-taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" )
+taxon_names<-c("Abietinaria abietina",  "Abludomelita" , "Westwodilla caecula", "Garbage", "Abra alba" )
 w<-wormsbynames(taxon_names)
 ## print unrecognized returns
 failed_species<-rownames(w[is.na(w[,1]),])
