@@ -15,7 +15,7 @@
 #' 
 #' @return a data frame.
 #' @details This function will take a character vector with taxon names, 
-#' retrive AphiaRecords from www.marinespecies.org using the 
+#' retrive AphiaRecords (CC-BY) from www.marinespecies.org using the 
 #' GET /AphiaRecordsByName/{ScientificName} Method described at
 #' http://www.marinespecies.org/rest/.
 #' Results will be output to a data.frame with each row being a record.
@@ -23,7 +23,7 @@
 #' If  not present last entry will be taken which seems to result in best results.
 #' 
 #' @examples
-#' taxon_names <- c( "Abietinaria abietina" , "Abludomelita" ,
+#' \donttest{taxon_names <- c( "Abietinaria abietina" , "Abludomelita" ,
 #'                   "Westwodilla caecula" , "Garbage" , "Abra alba" )
 #' w <- wormsbynames(taxon_names)
 #' ## print unrecognized returns
@@ -43,10 +43,10 @@
 #'         na = "", 
 #'         col.names = TRUE,
 #'         row.names = TRUE)
-#'         
+#' }
 #'         
 #' @export
-wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksize=50,like="true", marine_only="true",sleep_btw_chunks_in_sec=0.1){
+wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksize=50,like="false", marine_only="true",sleep_btw_chunks_in_sec=0.1){
   #library(httr)
   #library(plyr)
   
@@ -62,7 +62,7 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
   wrapname<-gsub(" ", "%20", taxon_names)
   chunk<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
   chunkid<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
-  cat("REQUESTING ",length(taxon_names)," ITEMS BY NAME\n",sep = "")
+  cat("REQUESTING ",length(taxon_names)," ITEMS BY NAME from World Register of Marine Species (CC-BY)\n",sep = "")
   for (round in 1:length(chunk)){
     if(verbose){
       cat(sprintf("%62s", paste0("chunk ",round,"/",length(chunk))),"\n")
@@ -104,7 +104,7 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
     nonefound<-is.na(worms[,"AphiaID"])
     failed_species<-taxon_names[nonefound]
     if(length(failed_species)>0){
-      failed_worms<-wormsbymatchnames(failed_species)
+      failed_worms<-wormsbymatchnames(failed_species,verbose=verbose,ids=FALSE)
       worms[nonefound,c(F,F,rep(T,ncol(failed_worms)))]<-failed_worms
     } else {
       cat("  Nothing to match.\n")
@@ -149,7 +149,7 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
 #' 
 #' @return a data frame.
 #' @details This function will take a character vector with taxon names, 
-#' retrive AphiaRecords from www.marinespecies.org using the 
+#' retrive AphiaRecords (CC-BY) from www.marinespecies.org using the 
 #' GET /AphiaRecordsByName/{ScientificName} Method described at
 #' http://www.marinespecies.org/rest/.
 #' Results will be output to a data.frame with each row being a record.
@@ -172,7 +172,7 @@ wormsbymatchnames <- function(taxon_names,verbose=TRUE,ids=FALSE,chunksize=50, m
   chunk<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
   chunkid<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
   if(verbose){
-    cat("REQUESTING ",length(taxon_names)," ITEMS USING FUZZY\n",sep = "")
+    cat("REQUESTING ",length(taxon_names)," ITEMS USING FUZZY from World Register of Marine Species (CC-BY)\n",sep = "")
   }
   for (round in 1:length(chunk)){
     if(verbose){
@@ -227,7 +227,7 @@ wormsbymatchnames <- function(taxon_names,verbose=TRUE,ids=FALSE,chunksize=50, m
       worms<-cbind(data.frame(id=1:nrow(worms) , name=taxon_names,stringsAsFactors = F),worms)
     }
   } else {
-    worms<-x
+    worms<-my_worms
   }
   if (verbose) {
     cat("matching names ..................................... DONE \n")
@@ -269,7 +269,7 @@ wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
   stopifnot(inherits(x,c("numeric","integer")))
   my_worms<-list()
   if(verbose){      
-    cat("REQUESTING ",length(x)," ITEMS BY ID:\n",sep = "")  
+    cat("REQUESTING ",length(x)," ITEMS BY ID from World Register of Marine Species (CC-BY)\n",sep = "")  
   }
   for (round in 1:length(x)){
     if(verbose){      cat(",",x[round],sep = "")    }
@@ -303,7 +303,7 @@ wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
 #' 
 #' @description takes data.frame as output by \code{\link{wormsbynames}} , 
 #' \code{\link{wormsbymatchnames}}, or \code{\link{wormsbyid}} and retrieves  additional
-#' Aphia records for not-"accepted" records in order to ultimately have "accepted" synonyms for all 
+#' Aphia records (CC-BY) for not-"accepted" records in order to ultimately have "accepted" synonyms for all 
 #' records in the dataset.
 #'
 #' @param x data.frame
@@ -334,13 +334,13 @@ wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
     anz_unexplaind<-nrow(unexplained)
     if(   anz_unexplaind!=0   ){
       if (verbose) {    cat("\nstill ",anz_unexplaind,"unhappy worms\n")   }
-      happyworms<-wormsbyid(unexplained$valid_AphiaID)
+      happyworms<-wormsbyid(unexplained$valid_AphiaID,verbose=verbose)
       if(ids){
         happyworms<-cbind(data.frame(id=(max(x$id)+1):(max(x$id)+nrow(happyworms)) , name=happyworms$scientificname), happyworms)
       }
       x<-rbind(x,happyworms)
     } else {
-      if (verbose) {cat("DONE ................................................consolidating\n")}
+      if (verbose) {cat("consolidating ...................................... DONE\n")}
       break
     }
   }
@@ -352,7 +352,7 @@ wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
 
 
 
-#' @title add field "accepted_id" wich contains the "AphiaID" of the respective "accepted" taxon
+#' @title add field "accepted_id" which contains the "AphiaID" of the respective "accepted" taxon
 #' 
 #' @description takes data.frame as output by \code{\link{wormsbynames}} , 
 #' \code{\link{wormsbymatchnames}}, or \code{\link{wormsbyid}} 
@@ -372,10 +372,15 @@ wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
 wormsaccepted <- function(x,verbose=TRUE,n_iter=10){
   # fixme make shure valid_AphiaIDs are unique
   x$accepted_id<-NA 
+  na_entries<-noval_entries<-0
   for(i in 1:nrow(x)){
     count<-0
     if(is.na(x$valid_AphiaID[i])) {
-      cat(x$scientificname[i] , " has no valid_AphiaID \n")
+      na_entries<-na_entries+1
+      if(!is.na(x$scientificname[i])){
+        noval_entries<-noval_entries+1
+        cat(x$scientificname[i] , " has no valid_AphiaID \n")
+      }
       next
     }
     x$accepted_id[i]<-x$valid_AphiaID[i]
@@ -388,7 +393,12 @@ wormsaccepted <- function(x,verbose=TRUE,n_iter=10){
       }
     }
   }
-  if (verbose) {cat("DONE ................................................accepting\n")}
+  if (verbose) {
+    if(na_entries>0){
+    cat("other entries with no valid ID (NAs)............... ",na_entries-noval_entries,"\n")
+    }
+    cat("DONE ............................................... accepting\n")
+    }
   return(x)
 }
 
@@ -398,22 +408,6 @@ wormsaccepted <- function(x,verbose=TRUE,n_iter=10){
 
 
 
-if(FALSE){   ### testing the function
-  w<-wormsbyid(c(238194,734530,45,1234567889))
-  w<-wormsbynames(c("Abietinaria abietina",  "Abludomelita" , "Abludomelita obtusata", "Garbage", "Abra alba" ))
-  (failed_species<-rownames(w[is.na(w[,1]),]))
-  w<-wormsbynames(c("Ab","glaophamus rubela anops",  "Algae" ,"glaophamus rubella anopsd"),match=T)
-  
-  data("northseamacrozoobenthos")
-  myworms<-wormsbynames(northseamacrozoobenthos[1:100],match=TRUE,id=T)
-  w<-wormsconsolidate(myworms)
-  u<-wormsaccepted(w)
-  
-  w<-wormsbynames(c("Ab","glaophamus rubela anops","Abietinaria abietina","Chaetozone cf. setosa",  "Algae" ),match=T)
-  w<-wormsbymatchnames(c("Ab","glaophamus rubela anops","Abietinaria abietina","Chaetozone cf. setosa",  "Algae" ))
-  
-  u<-wormsconsolidate(w)
-  
-}
+
 
 

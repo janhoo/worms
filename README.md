@@ -1,5 +1,5 @@
 # worms
-## retriving Aphia information from World Register of Marine Species (www.marinespecies.org) using [WoRMS´](http://www.marinespecies.org) RESTful Webservice
+## Retriving Aphia Information from World Register of Marine Species (www.marinespecies.org) using [WoRMS´](http://www.marinespecies.org) RESTful Webservice
 Build a consistent and WoRMS complient taxonomic dataset.
 Add the respective valid taxa to your taxonimic dataset. 
 For your taxa, add the respective valid taxa to your taxonimic dataset. For your taxa, get the Aphia ID of the currently  **accepted** taxon, which is not neccessarily identical to the valid Aphia id provided by WoRMS (AFAIunderstood in case of deleted or resurrected taxa).
@@ -32,10 +32,60 @@ type `?worms` and check the index to read function  <br />
 ## Contact
 * submit suggestions and bug-reports at: https://github.com/janhoo/worms/issues
 * send a pull request on: https://github.com/janhoo/worms/
-* compose a friendly e-mail to:jm.smith[at]gmx(dot)net
+* compose a friendly e-mail to:janmholstein[at]gmail(dot)com
 
 ----
 
 ### License
 
 This code is licensed to you under the terms of the [GNU AFFERO GENERAL PUBLIC LICENSE](http://choosealicense.com/licenses/agpl-3.0/) version 3.0 or higher.
+
+----
+
+#### Version History
+
+**0.2.2** better documentation and verbose behavior
+
+* WoRMS copyright information and proper citation
+* removed 7 non-ASCII containing entries from data(northseamacrozoobenthos)
+
+**0.2.1**  fix
+
+* some code hardening
+
+**0.2.0** implements new methods and data
+
+* search by id (wormsbyid)
+* fuzzy matching (wormsbymatchnames)
+* based on dataset, add taxa to represent every taxon with the respective accepted taxa (if possible)
+* add reference to the current accepted species (must not be valid AphiaID)
+* wormsbynames now can do fuzzy maching as well 
+* fixes issue where deleted or resurrected entries are preferred
+* fixes issue where a single non-empty result returned will break the code
+ 
+*Todo / Known Bugs*
+
+* proper error handling
+* wormsconsolidate does not properly communicates only partial successful operations
+
+**0.1.0** retrieves WoRMS Aphia information and turns them into a data.frame
+
+---
+
+#### Versioning Semantics
+Releases will be numbered with the following semantic versioning format:
+<major>.<minor>.<patch>
+
+And constructed with the following guidelines:
+
+* Breaking backward compatibility bumps the major (resets minor and patch)
+* New additions without breaking backward compatibility bumps the minor (resets patch)
+* Bug fixes and misc changes bumps the patch
+
+Props to  Carl Boettiger (knitcitations) and  Yihui's blog
+
+
+
+
+
+

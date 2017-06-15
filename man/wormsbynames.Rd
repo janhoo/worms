@@ -5,7 +5,7 @@
 \title{GET AphiaRecordsByNames}
 \usage{
 wormsbynames(taxon_names, ids = FALSE, match = FALSE, verbose = TRUE,
-  chunksize = 50, like = "true", marine_only = "true",
+  chunksize = 50, like = "false", marine_only = "true",
   sleep_btw_chunks_in_sec = 0.1)
 }
 \arguments{
@@ -41,7 +41,7 @@ For each name given, only the one AphiaRecord will be retrived. AphiaRecord with
 If  not present last entry will be taken which seems to result in best results.
 }
 \examples{
-taxon_names <- c( "Abietinaria abietina" , "Abludomelita" ,
+\donttest{taxon_names <- c( "Abietinaria abietina" , "Abludomelita" ,
                   "Westwodilla caecula" , "Garbage" , "Abra alba" )
 w <- wormsbynames(taxon_names)
 ## print unrecognized returns
@@ -61,7 +61,7 @@ write.csv(w,file = "aphiainfo.csv",
         na = "", 
         col.names = TRUE,
         row.names = TRUE)
-        
+}
         
 }
 

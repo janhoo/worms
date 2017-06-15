@@ -1,16 +1,16 @@
 Package: worms
 Type: Package
-Title: retriving Aphia information from World Register of Marine Species (WoRMS)
+Title: Retriving Aphia Information from World Register of Marine Species (WoRMS)
 Description: using WoRMS' RESTful Webservice, worms provides methods to retrieve taxonomic information from WoRMS. Build a consistent and WoRMS complient taxonomic dataset. Add the respective valid taxa to your taxonimic dataset. For your taxa, get the Aphia ID of the currently  **accepted** taxon, which is not neccessarily identical to the valid Aphia id provided by WoRMS.
-Version: 0.2.1
-Author: Jan M Holstein
-Maintainer: Jan M Holstein<janmholstein@gmail.com>
-Authors@R: c( person("Jan", "Holstein","M" , "janmholstein@gmail.com",
-    c("aut","cre", "cph")) )
+Version: 0.2.2
+Author: Jan Holstein [aut, cre, cph]
+Maintainer: Jan Holstein <janmholstein@gmail.com>
+Authors@R: c( person("Jan","Holstein" , email ="janmholstein@gmail.com",
+    role = c("aut","cre", "cph")) )
 Depends:
     httr,
     plyr
 License: GNU Affero General Public License
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
