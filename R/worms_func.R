@@ -64,7 +64,7 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
   wrapname<-gsub(" ", "%20", taxon_names)
   chunk<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
   chunkid<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
-  cat("REQUESTING ",length(taxon_names)," ITEMS BY NAME from World Register of Marine Species (CC-BY)\n",sep = "")
+  cat("REQUESTING ",length(taxon_names)," ITEMS BY NAME from World Register of Marine Species (www.marinespecies.org), ",format(Sys.time(), "%d/%m/%Y %X")," (CC-BY)\n",sep = "")
   for (round in 1:length(chunk)){
     if(verbose){
       cat(sprintf("%62s", paste0("chunk ",round,"/",length(chunk))),"\n")
@@ -175,7 +175,7 @@ wormsbymatchnames <- function(taxon_names,verbose=TRUE,ids=FALSE,chunksize=50, m
   chunk<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
   chunkid<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
   if(verbose){
-    cat("REQUESTING ",length(taxon_names)," ITEMS USING FUZZY from World Register of Marine Species (CC-BY)\n",sep = "")
+    cat("REQUESTING ",length(taxon_names)," ITEMS USING FUZZY from World Register of Marine Species  (www.marinespecies.org), ",format(Sys.time(), "%d/%m/%Y %X")," (CC-BY)\n",sep = "")
   }
   for (round in 1:length(chunk)){
     if(verbose){
@@ -274,7 +274,7 @@ wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
   stopifnot(inherits(x,c("numeric","integer")))
   my_worms<-list()
   if(verbose){      
-    cat("REQUESTING ",length(x)," ITEMS BY ID from World Register of Marine Species (CC-BY)\n",sep = "")  
+    cat("REQUESTING ",length(x)," ITEMS BY ID from World Register of Marine Species  (www.marinespecies.org), ",format(Sys.time(), "%d/%m/%Y %X")," (CC-BY)\n",sep = "")  
   }
   for (round in 1:length(x)){
     if(verbose){      cat(",",x[round],sep = "")    }

@@ -17,7 +17,7 @@ wormsbynames(taxon_names, ids = FALSE, match = FALSE, verbose = TRUE,
 
 \item{verbose}{be verbose}
 
-\item{chunksize}{only 50 taxa can be looked up per request, so request are split up into chunks (should be 50 or less)}
+\item{chunksize}{there is a limit to the number of taxa that can be looked up at once, so request are split up into chunks. This limit seems to be variable. 50 is very safe.}
 
 \item{like}{Add a "\%"-sign after the ScientificName (SQL LIKE function). Default=true}
 
