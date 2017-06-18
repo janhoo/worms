@@ -64,6 +64,8 @@ This code is licensed to you under the terms of the [GNU AFFERO GENERAL PUBLIC L
 
 * proper error handling
 * wormsconsolidate does not properly communicates only partial successful operations
+* wormsbynames: better rules for deciding which entry to take
+* a basic function or switch in wormsbynames() that retrieves all entries for a given name
 
 **0.1.0** retrieves WoRMS Aphia information and turns them into a data.frame
 
