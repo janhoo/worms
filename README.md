@@ -79,9 +79,6 @@ And constructed with the following guidelines:
 * New additions without breaking backward compatibility bumps the minor (resets patch)
 * Bug fixes and misc changes bumps the patch
 
-Props to  Carl Boettiger (knitcitations) and  Yihui's blog
-
-
 
 
 
