@@ -14,10 +14,9 @@ data(northseamacrozoobenthos)
 \description{
 for tests and demonstration.
 }
-\author{
-Jan M Holstein , 2017-03-05
-}
 \seealso{
 \code{\link{wormsbynames}}, \code{\link{wormsbymatchnames}}
 }
-
+\author{
+Jan M Holstein , 2017-03-05
+}

@@ -1,17 +1,18 @@
-#' @name worms
 #' @title worms: Use WoRMS RESTful webservice to scrape Aphia information from World Register of Marine Species (WoRMS)
 #' 
-#' @description worms provides functions to scrape Aphia information from \href{www.marinespecies.org}{WoRMS} 
-#' using its RESTful Webservice.
-#' It implements methods documented at \url{http://www.marinespecies.org/rest/}.
+#' @description The worms package provides two kinds of functions: 
 #' 
-#' @section Aim:
-#' Build a consistent and WoRMS complient taxonomic dataset.
-#' Add the respective valid taxa to your taxonimic dataset. 
-#' For your taxa, add the respective valid taxa to your taxonimic dataset. 
-#' For your taxa, get the Aphia ID of the currently accepted taxon, 
-#' which is not neccessarily identical to the valid Aphia id provided by
-#' WoRMS (AFAIunderstood in case of deleted or resurrected taxa).
+#' a) retrieving taxonomic information using WoRMS' RESTful Webservice 
+#' by using taxon name search, fuzzy matching, or  Aphia ID search
+#' implementing methods documented at \url{http://www.marinespecies.org/rest/}
+#' 
+#' b) functions that parse the data for synonyms in order to complete the dataset so that
+#' for every taxon in the dataset the respective accepted-status taxon exists as well.
+#' Constructed references to the respective accepted-status taxa help aggregating biodiversity data without synonyms, 
+#' alternative writing standards, and common misspellings leading to errors.
+#' 
+#' 
+#' @references 
 #' Information from World Register of Marine Species is free to use under the condition that 
 #' they are cited (CC-BY).
 #' The citation for the full database is:  
@@ -25,5 +26,5 @@
 #' 
 #' @keywords worms 
 #' @docType package
-#' 
+#' @name worms
 NULL

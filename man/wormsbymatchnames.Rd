@@ -28,11 +28,10 @@ takes character vector with taxon names and retrives AphiaRecords from WoRMS
 }
 \details{
 This function will take a character vector with taxon names, 
-retrive AphiaRecords from www.marinespecies.org using the 
+retrive AphiaRecords (CC-BY) from www.marinespecies.org using the 
 GET /AphiaRecordsByName/{ScientificName} Method described at
 http://www.marinespecies.org/rest/.
 Results will be output to a data.frame with each row being a record.
 For each name given, only the one AphiaRecord will be retrived. AphiaRecord with "accepted" status are preferred.
 If  not present last entry will be taken which seems to result in best results.
 }
-

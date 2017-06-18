@@ -19,7 +19,7 @@ a data frame.
 \description{
 takes data.frame as output by \code{\link{wormsbynames}} , 
 \code{\link{wormsbymatchnames}}, or \code{\link{wormsbyid}} and retrieves  additional
-Aphia records for not-"accepted" records in order to ultimately have "accepted" synonyms for all 
+Aphia records (CC-BY) for not-"accepted" records in order to ultimately have "accepted" synonyms for all 
 records in the dataset.
 }
 \details{
@@ -28,5 +28,6 @@ retrive AphiaRecords from www.marinespecies.org using the
 GET /AphiaRecordByAphiaID Method described at
 http://www.marinespecies.org/rest/.
 Results will be outbut to a data.frame with each row being a record.
-}
 
+For examples, see  \code{\link{wormsaccepted}}
+}

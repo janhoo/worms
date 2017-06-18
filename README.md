@@ -44,13 +44,10 @@ This code is licensed to you under the terms of the [GNU AFFERO GENERAL PUBLIC L
 
 #### Version History
 
-**0.2.2** better documentation and verbose behavior
+**0.2.1** better documentation, verbose behavior
 
 * WoRMS copyright information and proper citation
 * removed 7 non-ASCII containing entries from data(northseamacrozoobenthos)
-
-**0.2.1**  fix
-
 * some code hardening
 
 **0.2.0** implements new methods and data

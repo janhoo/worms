@@ -23,11 +23,13 @@
 #' If  not present last entry will be taken which seems to result in best results.
 #' 
 #' @examples
-#' \donttest{taxon_names <- c( "Abietinaria abietina" , "Abludomelita" ,
-#'                   "Westwodilla caecula" , "Garbage" , "Abra alba" )
+#' taxon_names <- c( "Westwodilla caecula" ,  "Abra alba", "Chaetozone cf. setosa",  "Algae" )
 #' w <- wormsbynames(taxon_names)
 #' ## print unrecognized returns
 #' failed_species <- rownames(w[is.na(w[,1]),])
+#' 
+#' ## try again with fuzzy matching turned on
+#' \donttest{w <- wormsbynames(taxon_names, match=TRUE)}
 #' 
 #' ## this is how to load taxon_names from file
 #' write.csv(taxon_names , file = "tax.csv", 
@@ -43,7 +45,7 @@
 #'         na = "", 
 #'         col.names = TRUE,
 #'         row.names = TRUE)
-#' }
+#' 
 #'         
 #' @export
 wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksize=50,like="false", marine_only="true",sleep_btw_chunks_in_sec=0.1){
@@ -262,6 +264,8 @@ wormsbymatchnames <- function(taxon_names,verbose=TRUE,ids=FALSE,chunksize=50, m
 #' http://www.marinespecies.org/rest/.
 #' Results will be output to a data.frame with each row being a record.
 #' 
+#' For examples, see  \code{\link{wormsaccepted}}
+#' 
 #' @export
 wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
   #library(httr)
@@ -317,6 +321,8 @@ wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
 #' http://www.marinespecies.org/rest/.
 #' Results will be outbut to a data.frame with each row being a record.
 #' 
+#' For examples, see  \code{\link{wormsaccepted}}
+#'
 #' @export
 wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
   if(FALSE){
@@ -367,6 +373,19 @@ wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
 #' @details This function helps updating you taxon information and eliminates ambiguity 
 #' because the valid AphiaID is nor neccessary the AphiaID of an accepted taxon. You should run 
 #' \code{\link{wormsconsolidate}} bevorhand to enshure all "accepted" taxons are present.
+#' 
+#' @examples 
+#' ## start with IDs that are no longer up to date 
+#' # get the Aphia information
+#' u<-wormsbyid(c(424548,340537))
+#' 
+#' #recursively retrive information on the taxa they refer to
+#' v<-wormsconsolidate(u)
+#' 
+#' # what are the currently correct "accepted" taxa? Answer: "accepted_id".
+#' w<-wormsaccepted(v)
+#' w[,c("scientificname","AphiaID","status","valid_AphiaID","valid_name","accepted_id")]
+#' 
 #' 
 #' @export
 wormsaccepted <- function(x,verbose=TRUE,n_iter=10){

@@ -27,5 +27,6 @@ retrive AphiaRecords from www.marinespecies.org using the
 GET /AphiaRecordByAphiaID Method described at
 http://www.marinespecies.org/rest/.
 Results will be output to a data.frame with each row being a record.
-}
 
+For examples, see  \code{\link{wormsaccepted}}
+}
