@@ -71,7 +71,7 @@ This code is licensed to you under the terms of the [GNU AFFERO GENERAL PUBLIC L
 
 #### Versioning Semantics
 Releases will be numbered with the following semantic versioning format:
-<major>.<minor>.<patch>
+major.minor.patch
 
 And constructed with the following guidelines:
 
