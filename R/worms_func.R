@@ -5,7 +5,7 @@
 #' @description takes character vector with taxon names and retrives AphiaRecords from WoRMS 
 #'
 #' @param taxon_names character vector with names of taxa to look up.
-#' @param chunksize only 50 taxa can be looked up per request, so request are split up into chunks (should be 50 or less)
+#' @param chunksize there is a limit to the number of taxa that can be looked up at once, so request are split up into chunks. This limit seems to be variable. 50 is very safe.  
 #' @param verbose be verbose
 #' @param ids add column "id" and "name" with running id and search names
 #' @param match taxon_names that could not retrieved will be retried with \code{\link{wormsbymatchnames}}. Implies "id=TRUE"
@@ -90,7 +90,8 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
           if(r_parsed[[i]][[j]]$status == "accepted"){
             my_worms[[w_index]]<-r_parsed[[i]][[j]]
           }
-        }          
+        }
+        # alternate representation
       }
     }
   }

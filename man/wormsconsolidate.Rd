@@ -2,7 +2,7 @@
 % Please edit documentation in R/worms_func.R
 \name{wormsconsolidate}
 \alias{wormsconsolidate}
-\title{add "accepted" AphiaRecords for all synonyms if not already there}
+\title{Recursivly retrieves respective "accepted" AphiaRecords for all synonyms if not already there}
 \usage{
 wormsconsolidate(x, verbose = TRUE, sleep_btw_chunks_in_sec = 0.01)
 }

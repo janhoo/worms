@@ -2,7 +2,7 @@
 % Please edit documentation in R/worms_func.R
 \name{wormsaccepted}
 \alias{wormsaccepted}
-\title{add field "accepted_id" which contains the "AphiaID" of the respective "accepted" taxon}
+\title{Constructs "accepted_id" column which contains the "AphiaID" of the respective "accepted" taxon}
 \usage{
 wormsaccepted(x, verbose = TRUE, n_iter = 10)
 }

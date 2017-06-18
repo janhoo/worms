@@ -3,7 +3,7 @@
 \docType{data}
 \name{northseamacrozoobenthos}
 \alias{northseamacrozoobenthos}
-\title{mix of taxonomic, vernacular and trivial names}
+\title{Over 1600 taxonomic, vernacular and trivial names of benthic critters from the North Sea}
 \format{a vector of class \code{character}.}
 \source{
 various
@@ -12,7 +12,7 @@ various
 data(northseamacrozoobenthos)
 }
 \description{
-for tests and demonstration.
+Used for tests and demonstration.
 }
 \seealso{
 \code{\link{wormsbynames}}, \code{\link{wormsbymatchnames}}
