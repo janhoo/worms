@@ -303,7 +303,7 @@ wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
 }
 
 
-#' @title add "accepted" AphiaRecords for all synonyms if not already there
+#' @title Recursivly retrieves respective "accepted" AphiaRecords for all synonyms if not already there
 #' 
 #' @description takes data.frame as output by \code{\link{wormsbynames}} , 
 #' \code{\link{wormsbymatchnames}}, or \code{\link{wormsbyid}} and retrieves  additional
@@ -358,7 +358,7 @@ wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
 
 
 
-#' @title add field "accepted_id" which contains the "AphiaID" of the respective "accepted" taxon
+#' @title Constructs "accepted_id" column which contains the "AphiaID" of the respective "accepted" taxon
 #' 
 #' @description takes data.frame as output by \code{\link{wormsbynames}} , 
 #' \code{\link{wormsbymatchnames}}, or \code{\link{wormsbyid}} 
