@@ -28,7 +28,7 @@
 #' doi:10.14284/170  
 #' 
 #' For single taxa, references are given in the citation column
-#' Please give proper reference to them. 
+#' Please give proper reference to them.
 #' 
 #' @keywords worms 
 #' @docType package
