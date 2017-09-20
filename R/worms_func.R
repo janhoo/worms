@@ -325,7 +325,7 @@ wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
 #' For examples, see  \code{\link{wormsaccepted}}
 #'
 #' @export
-wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
+wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01,once=TRUE){
   if(FALSE){
     x<-w
     verbose=TRUE
@@ -335,26 +335,31 @@ wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
   while(TRUE){
     count<-count+1
     ids<-ifelse(names(x)[1]=="id",TRUE,FALSE)
+    #cat(ids,"\n")
     
     
-    unexplained<-x[(!is.na(x$valid_AphiaID)) & (x$status!="accepted") & (!x$valid_AphiaID%in%x$AphiaID),]
+    unexplained<-x[x$valid_AphiaID>0 & (!is.na(x$valid_AphiaID)) & (x$status!="accepted") & (!x$valid_AphiaID%in%x$AphiaID),]
     anz_unexplaind<-nrow(unexplained)
     if(   anz_unexplaind!=0   ){
       if (verbose) {    cat("\nstill ",anz_unexplaind,"unhappy worms\n")   }
-      happyworms<-wormsbyid(unexplained$valid_AphiaID,verbose=verbose)
+      happyworms<-wormsbyid(unexplained$valid_AphiaID,verbose=verbose) 
       if(ids){
         happyworms<-cbind(data.frame(id=(max(x$id)+1):(max(x$id)+nrow(happyworms)) , name=happyworms$scientificname), happyworms)
       }
-      x<-rbind(x,happyworms)
+      if(once){
+        cat("rbind result with input and run maybe again!\n")
+        return(happyworms)
+      } else {
+        x<-rbind(x,happyworms)
+      }
     } else {
       if (verbose) {cat("consolidating ...................................... DONE\n")}
       break
     }
+    
   }
   return(x)
 }
-
-
 
 
 
@@ -392,6 +397,7 @@ wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01){
 wormsaccepted <- function(x,verbose=TRUE,n_iter=10){
   # fixme make shure valid_AphiaIDs are unique
   x$accepted_id<-NA 
+  noacceptedid<-noacceptedrow<-NULL
   na_entries<-noval_entries<-0
   for(i in 1:nrow(x)){
     count<-0
@@ -408,12 +414,24 @@ wormsaccepted <- function(x,verbose=TRUE,n_iter=10){
       count<-count+1
       x$accepted_id[i]<-x$valid_AphiaID[match(x$accepted_id[i],x$AphiaID)]
       if(count>n_iter){
-        cat("no accepted AphiaID for ",x$scientificname[i] , " after", n_iter," interations\n")
+        cat("no accepted AphiaID for ",x$scientificname[i] ,x$AphiaID[i], " after", n_iter," interations\n")
+        noacceptedid <- cbind(noacceptedid,x$AphiaID[i])
+        noacceptedrow <- cbind(noacceptedrow,i)
         break
       }
     }
   }
   if (verbose) {
+    if(length(noacceptedid)>0){
+      cat("AphiaID without acceptance ........................... ",length(noacceptedid),"\n")
+      cat(paste(noacceptedid,","))
+      cat("\n")
+    }
+    if(length(noacceptedrow)>0){
+      cat("AphiaID without acceptance (rowsnumbers)............... \n")
+      cat(paste(noacceptedrow,","))
+      cat("\n")
+    }
     if(na_entries>0){
     cat("other entries with no valid ID (NAs)............... ",na_entries-noval_entries,"\n")
     }
