@@ -43,6 +43,10 @@ This code is licensed to you under the terms of the [GNU AFFERO GENERAL PUBLIC L
 ----
 
 #### Version History
+**0.2.2** error fixes
+* fixed an error in examples where wormsbynames() would terminate due to changes in dependencies.
+* changed default. Now wormsaccepted(..., once = FALSE, ...) which is the supposed usecase.
+
 
 **0.2.1** better documentation, verbose behavior
 

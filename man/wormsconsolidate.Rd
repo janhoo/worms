@@ -4,7 +4,8 @@
 \alias{wormsconsolidate}
 \title{Recursivly retrieves respective "accepted" AphiaRecords for all synonyms if not already there}
 \usage{
-wormsconsolidate(x, verbose = TRUE, sleep_btw_chunks_in_sec = 0.01)
+wormsconsolidate(x, verbose = TRUE, sleep_btw_chunks_in_sec = 0.01,
+  once = FALSE)
 }
 \arguments{
 \item{x}{data.frame}
@@ -12,6 +13,8 @@ wormsconsolidate(x, verbose = TRUE, sleep_btw_chunks_in_sec = 0.01)
 \item{verbose}{be verbose}
 
 \item{sleep_btw_chunks_in_sec}{pause between requests}
+
+\item{once}{only one retrival iteration. No concatination of output with result. (For debugging)}
 }
 \value{
 a data frame.

@@ -52,7 +52,6 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
   #library(httr)
   #library(plyr)
   
-  
   stopifnot(inherits(taxon_names,"character"))
   if(match){ids<-TRUE}
   search_options<-paste0("like=",like,"&marine_only=",marine_only)
@@ -66,6 +65,7 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
   chunkid<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
   cat("REQUESTING ",length(taxon_names)," ITEMS BY NAME from World Register of Marine Species (www.marinespecies.org), ",format(Sys.time(), "%d/%m/%Y %X")," (CC-BY)\n",sep = "")
   for (round in 1:length(chunk)){
+    
     if(verbose){
       cat(sprintf("%62s", paste0("chunk ",round,"/",length(chunk))),"\n")
     }
@@ -78,7 +78,7 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
     r_parsed<-content(r,as="parsed")
     for (i in 1:length(r_parsed)){
       w_index<-unlist(chunkid[round])[i]
-      if(is.null(r_parsed[[i]][[1]])){
+      if(length(r_parsed[[i]])==0){
         my_worms[[w_index]]<-NA
         cat(sprintf("%-46s       %-40s", taxon_names[w_index] , "no match"),"\n")
       } else if(length(r_parsed[[i]])==1){
@@ -314,6 +314,7 @@ wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
 #' @param x data.frame
 #' @param verbose be verbose
 #' @param sleep_btw_chunks_in_sec pause between requests 
+#' @param once only one retrival iteration. No concatination of output with result. (For debugging)
 #' 
 #' @return a data frame.
 #' @details This function will take a integer vector with AphiaIDs, 
@@ -325,7 +326,7 @@ wormsbyid <- function(x,verbose=TRUE,ids=FALSE,sleep_btw_chunks_in_sec=0.01){
 #' For examples, see  \code{\link{wormsaccepted}}
 #'
 #' @export
-wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01,once=TRUE){
+wormsconsolidate <- function(x,verbose=TRUE,sleep_btw_chunks_in_sec=0.01,once=FALSE){
   if(FALSE){
     x<-w
     verbose=TRUE
@@ -410,6 +411,10 @@ wormsaccepted <- function(x,verbose=TRUE,n_iter=10){
       next
     }
     x$accepted_id[i]<-x$valid_AphiaID[i]
+    if(is.na(match(x$accepted_id[i],x$AphiaID))){
+      cat("ERROR! AphiaID",x$accepted_id[i],"is missing ... rerun wormsconsolidate and join with input")
+      return()
+    }
     while(x$status[match(x$accepted_id[i],x$AphiaID)] != "accepted"){
       count<-count+1
       x$accepted_id[i]<-x$valid_AphiaID[match(x$accepted_id[i],x$AphiaID)]

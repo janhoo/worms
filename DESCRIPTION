@@ -2,7 +2,7 @@ Package: worms
 Type: Package
 Title: Retriving Aphia Information from World Register of Marine Species
 Description: Retrieves taxonomic information from  <http://www.marinespecies.org> using WoRMS' RESTful Webservice. Utility functions aim at taxonomic consistency.
-Version: 0.2.1
+Version: 0.2.2
 Author: Jan Holstein  [aut, cre, cph]
 Maintainer: Jan Holstein <janmholstein@gmail.com>
 Authors@R: c( person("Jan", "Holstein" ,  
