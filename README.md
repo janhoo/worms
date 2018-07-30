@@ -43,6 +43,11 @@ This code is licensed to you under the terms of the [GNU AFFERO GENERAL PUBLIC L
 ----
 
 #### Version History
+**1.0.0** major update of *wormsbynames* breaks backwards compatibility + minor bugfixes
+* different arguments and defaults for *wormsbynames*
+* *wormsbymachnames* is deprecated. Functionality is in *wormsbynames* now
+* *wormsbynames* alway outputs a dataframe of input vector length, even if not a single hit.
+
 **0.2.2** error fixes
 * fixed an error in examples where wormsbynames() would terminate due to changes in dependencies.
 * changed default. Now wormsaccepted(..., once = FALSE, ...) which is the supposed usecase.

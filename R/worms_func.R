@@ -8,9 +8,9 @@
 #' @param chunksize there is a limit to the number of taxa that can be looked up at once, so request are split up into chunks. This limit seems to be variable. 50 is very safe.  
 #' @param verbose be verbose
 #' @param ids add column "id" and "name" with running id and search names
-#' @param match taxon_names that could not retrieved will be retried with \code{\link{wormsbymatchnames}}. Implies "id=TRUE"
-#' @param like Add a "\%"-sign after the ScientificName (SQL LIKE function). Default=true
-#' @param marine_only Limit to marine taxa. Default=true
+#' @param match Use AphiaRecordsByMatchNames instead to use fuzzy name matching. Default=FALSE
+#' @param like Returns also entries of match_type 'like'. Default=TRUE
+#' @param marine_only Limit to marine taxa. Default=TRUE
 #' @param sleep_btw_chunks_in_sec pause between requests 
 #' 
 #' @return a data frame.
@@ -48,36 +48,77 @@
 #' 
 #'         
 #' @export
-wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksize=50,like="false", marine_only="true",sleep_btw_chunks_in_sec=0.1){
+wormsbynames <- function(taxon_names,ids=FALSE,verbose=TRUE,chunksize=50,like=TRUE, marine_only=FALSE, match=FALSE, sleep_btw_chunks_in_sec=0.1){
   #library(httr)
   #library(plyr)
   
   stopifnot(inherits(taxon_names,"character"))
-  if(match){ids<-TRUE}
-  search_options<-paste0("like=",like,"&marine_only=",marine_only)
+  if(match){
+    request<-"http://www.marinespecies.org/rest/AphiaRecordsByMatchNames"
+    search_options<-paste0("&marine_only=",marine_only)
+    mode <- " ITEMS USING FUZZY (AphiaRecordsByMatchNames) "
+    #ids<-TRUE
+  } else {
+    request<-"http://www.marinespecies.org/rest/AphiaRecordsByNames"
+    search_options<-paste0("like=",like,"&marine_only=",marine_only)
+    mode <- " ITEMS BY NAME (AphiaRecordsByNames)"
+  }
+  
+  if(like){
+    like.char <- "true"
+  } else {
+    like.char <- "false"
+  }
+  if(marine_only){
+    marine_only.char <- "true"
+  } else {
+    marine_only.char <- "false"
+  }
   my_worms<-list()
-  request<-"http://www.marinespecies.org/rest/AphiaRecordsByNames"
+  
+  
+  #request<-"http://www.marinespecies.org/rest/AphiaRecordsByMatchNames"
   #li<-setNames(    as.list(c(a[[1]],"false","true")) , c( rep("scientificnames[]",length(a[[1]])),"like","marine_only" ) )     
   # r<-GET("http://www.marinespecies.org/rest/AphiaRecordsByName", query = list("scientificnames[]" = "Abietinaria%20abietina","scientificnames[]" = "Acanthocardia%20echinata"))
   
   wrapname<-gsub(" ", "%20", taxon_names)
-  chunk<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
-  chunkid<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
-  cat("REQUESTING ",length(taxon_names)," ITEMS BY NAME from World Register of Marine Species (www.marinespecies.org), ",format(Sys.time(), "%d/%m/%Y %X")," (CC-BY)\n",sep = "")
-  for (round in 1:length(chunk)){
+  chunks<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
+  taxon.chunks<-split(wrapname, ceiling(seq_along(taxon_names)/chunksize))
+  chunks.id<-split(1:length(taxon_names), ceiling(seq_along(taxon_names)/chunksize))
+  if(verbose){
+    cat("REQUESTING ",length(taxon_names), mode, "\nfrom World Register of Marine Species (www.marinespecies.org) \n",format(Sys.time(), "%d/%m/%Y %X")," (CC-BY)\n",sep = "")
+  }
+  for (chunk in 1:length(chunks)){
     
     if(verbose){
-      cat(sprintf("%62s", paste0("chunk ",round,"/",length(chunk))),"\n")
+      cat(sprintf("%62s", paste0("chunk ",chunk,"/",length(chunks))),"\n")
     }
-    m<-paste(paste(paste0("scientificnames[]=",chunk[[round]]),collapse="&"),search_options,sep="&")
+    m<-paste(paste(paste0("scientificnames[]=",chunks[[chunk]]),collapse="&"),search_options,sep="&")
     r<-GET(paste(request,m,sep="?"))
     Sys.sleep(sleep_btw_chunks_in_sec)
-    stopifnot(r$status_code==200)
+    
+    
+    
+    if (r$status_code!=200){
+      switch(as.character(r$status_code),
+             "204"={cat("Nothing found in chunk", chunk ,"\n")},
+             "400"={cat("Bad or missing properties in chunk", chunk ,"\n")},
+             {stop(r$status_code, " Bad return value in chunk", chunk, " lazy programmer should think of what to do here!" ,"\n")}
+      )
+      #write NA to myworms
+      ids.of.current.chunk <- unlist(chunks.id[chunk])
+      for (i in 1:length(ids.of.current.chunk)){
+        w_index<-ids.of.current.chunk[i]
+        my_worms[[w_index]]<-NA
+        cat(sprintf("%-46s       %-40s", taxon_names[w_index] , "no no match"),"\n")
+      }
+      next
+    }
     
     # gather lists in master list
     r_parsed<-content(r,as="parsed")
     for (i in 1:length(r_parsed)){
-      w_index<-unlist(chunkid[round])[i]
+      w_index<-unlist(chunks.id[chunk])[i]
       if(length(r_parsed[[i]])==0){
         my_worms[[w_index]]<-NA
         cat(sprintf("%-46s       %-40s", taxon_names[w_index] , "no match"),"\n")
@@ -97,28 +138,32 @@ wormsbynames <- function(taxon_names,ids=FALSE,match=FALSE,verbose=TRUE,chunksiz
   }
   # pull dataframe out of master list
   non.null.list <- lapply(my_worms, lapply, function(x)ifelse(is.null(x), NA, x))
-  worms<-rbind.fill(lapply(non.null.list, as.data.frame,stringsAsFactors = F))
+  worms<-plyr::rbind.fill(lapply(non.null.list, as.data.frame,stringsAsFactors = F))
   worms$NA.<-NULL
   if(ids){
     worms<-cbind(data.frame(id=1:nrow(worms) , name=taxon_names,stringsAsFactors = F),worms)
   }
   if (verbose) {cat("by names ........................................... DONE\n")}
-  if(match){
-    nonefound<-is.na(worms[,"AphiaID"])
-    failed_species<-taxon_names[nonefound]
-    if(length(failed_species)>0){
-      failed_worms<-wormsbymatchnames(failed_species,verbose=verbose,ids=FALSE)
-      worms[nonefound,c(F,F,rep(T,ncol(failed_worms)))]<-failed_worms
-    } else {
-      cat("  Nothing to match.\n")
-    }
-    
-  } 
+  #param match taxon_names that could not retrieved will be retried with \code{\link{wormsbymatchnames}}. Implies "id=TRUE"
+  # if(match){
+  #   nonefound<-is.na(worms[,"AphiaID"])
+  #   failed_species<-taxon_names[nonefound]
+  #   if(length(failed_species)>0){
+  #     failed_worms<-wormsbymatchnames(failed_species,verbose=verbose,ids=FALSE)
+  #     worms[nonefound,c(F,F,rep(T,ncol(failed_worms)))]<-failed_worms
+  #   } else {
+  #     cat("  Nothing to match.\n")
+  #   }
+  #   
+  # } 
   
   
   
   return(worms)
 }
+
+
+
 
 
 
