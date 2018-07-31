@@ -20,7 +20,7 @@ Done.
 ## Usage
 issue `library(worms)`,  <br />
 use the package documentation, e.g.,  <br />
-type `?worms` and check the index to read function  <br />
+type `?worms` and check the index to read function documentation <br />
 
 ## Contributing
 1. Fork it!
