@@ -5,7 +5,8 @@
 \title{GET AphiaRecordsByMatchNames}
 \usage{
 wormsbymatchnames(taxon_names, verbose = TRUE, ids = FALSE,
-  chunksize = 50, marine_only = "true", sleep_btw_chunks_in_sec = 0.1)
+  chunksize = 50, marine_only = "true",
+  sleep_btw_chunks_in_sec = 0.1)
 }
 \arguments{
 \item{taxon_names}{character vector with names of taxa to look up.}

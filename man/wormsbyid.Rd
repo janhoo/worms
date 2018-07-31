@@ -4,7 +4,8 @@
 \alias{wormsbyid}
 \title{GET AphiaRecordByAphiaID}
 \usage{
-wormsbyid(x, verbose = TRUE, ids = FALSE, sleep_btw_chunks_in_sec = 0.01)
+wormsbyid(x, verbose = TRUE, ids = FALSE,
+  sleep_btw_chunks_in_sec = 0.01)
 }
 \arguments{
 \item{x}{AphiaIDs}

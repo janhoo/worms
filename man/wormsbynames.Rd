@@ -4,8 +4,8 @@
 \alias{wormsbynames}
 \title{GET AphiaRecordsByNames}
 \usage{
-wormsbynames(taxon_names, ids = FALSE, match = FALSE, verbose = TRUE,
-  chunksize = 50, like = "false", marine_only = "true",
+wormsbynames(taxon_names, ids = FALSE, verbose = TRUE,
+  chunksize = 50, like = TRUE, marine_only = FALSE, match = FALSE,
   sleep_btw_chunks_in_sec = 0.1)
 }
 \arguments{
@@ -13,15 +13,15 @@ wormsbynames(taxon_names, ids = FALSE, match = FALSE, verbose = TRUE,
 
 \item{ids}{add column "id" and "name" with running id and search names}
 
-\item{match}{taxon_names that could not retrieved will be retried with \code{\link{wormsbymatchnames}}. Implies "id=TRUE"}
-
 \item{verbose}{be verbose}
 
 \item{chunksize}{there is a limit to the number of taxa that can be looked up at once, so request are split up into chunks. This limit seems to be variable. 50 is very safe.}
 
-\item{like}{Add a "\%"-sign after the ScientificName (SQL LIKE function). Default=true}
+\item{like}{Returns also entries of match_type 'like'. Default=TRUE}
 
-\item{marine_only}{Limit to marine taxa. Default=true}
+\item{marine_only}{Limit to marine taxa. Default=TRUE}
+
+\item{match}{Use AphiaRecordsByMatchNames instead to use fuzzy name matching. Default=FALSE}
 
 \item{sleep_btw_chunks_in_sec}{pause between requests}
 }

@@ -269,7 +269,7 @@ wormsbymatchnames <- function(taxon_names,verbose=TRUE,ids=FALSE,chunksize=50, m
   if(count<length(r_parsed)){
     # pull dataframe out of master list
     non.null.list <- lapply(my_worms, lapply, function(x)ifelse(is.null(x), NA, x))
-    worms<-rbind.fill(lapply(non.null.list, as.data.frame,stringsAsFactors = F))
+    worms<-plyr::rbind.fill(lapply(non.null.list, as.data.frame,stringsAsFactors = F))
     worms$NA.<-NULL
     if(ids){
       worms<-cbind(data.frame(id=1:nrow(worms) , name=taxon_names,stringsAsFactors = F),worms)
