@@ -42,6 +42,16 @@ This code is licensed to you under the terms of the [GNU AFFERO GENERAL PUBLIC L
 
 ----
 
+
+### Cite
+
+Holstein (2017). worms: A WoRMS RESTful webservice to scrape Aphia information from World Register of Marine Species. R package version 1.0.0. https://CRAN.R-project.org/package=worms
+
+----
+
+
+
+
 #### Version History
 **1.0.0** major update of *wormsbynames* breaks backwards compatibility + minor bugfixes
 * different arguments and defaults for *wormsbynames*
