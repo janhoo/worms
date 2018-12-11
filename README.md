@@ -53,6 +53,9 @@ Holstein (2017). worms: A WoRMS RESTful webservice to scrape Aphia information f
 
 
 #### Version History
+
+**1.0.1 minor bugfixes
+
 **1.0.0** major update of *wormsbynames* breaks backwards compatibility + minor bugfixes
 * different arguments and defaults for *wormsbynames*
 * *wormsbymatchnames* is deprecated. Functionality is in *wormsbynames* now

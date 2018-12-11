@@ -8,7 +8,7 @@
 #' @param chunksize there is a limit to the number of taxa that can be looked up at once, so request are split up into chunks. This limit seems to be variable. 50 is very safe.  
 #' @param verbose be verbose
 #' @param ids add column "id" and "name" with running id and search names
-#' @param match Use AphiaRecordsByMatchNames instead to use fuzzy name matching. Default=FALSE
+#' @param match TRUE for fuzzy name matching (AphiaRecordsByMatchNames). FALSE for default matching (AphiaRecordsByNames). Default=FALSE
 #' @param like Returns also entries of match_type 'like'. Default=TRUE
 #' @param marine_only Limit to marine taxa. Default=TRUE
 #' @param sleep_btw_chunks_in_sec pause between requests 
