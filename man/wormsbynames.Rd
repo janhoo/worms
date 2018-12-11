@@ -4,8 +4,8 @@
 \alias{wormsbynames}
 \title{GET AphiaRecordsByNames}
 \usage{
-wormsbynames(taxon_names, ids = FALSE, verbose = TRUE,
-  chunksize = 50, like = TRUE, marine_only = FALSE, match = FALSE,
+wormsbynames(taxon_names, ids = FALSE, verbose = TRUE, chunksize = 50,
+  like = TRUE, marine_only = FALSE, match = FALSE,
   sleep_btw_chunks_in_sec = 0.1)
 }
 \arguments{
@@ -21,7 +21,7 @@ wormsbynames(taxon_names, ids = FALSE, verbose = TRUE,
 
 \item{marine_only}{Limit to marine taxa. Default=TRUE}
 
-\item{match}{Use AphiaRecordsByMatchNames instead to use fuzzy name matching. Default=FALSE}
+\item{match}{TRUE for fuzzy name matching (AphiaRecordsByMatchNames). FALSE for default matching (AphiaRecordsByNames). Default=FALSE}
 
 \item{sleep_btw_chunks_in_sec}{pause between requests}
 }
